@@ -1,0 +1,21 @@
+# Data Handling
+pandas==2.2.0
+numpy==1.26.3
+duckdb==0.9.2
+Faker==22.5.1
+
+# AI & Vector DB
+langchain==0.1.0
+langchain-community==0.0.10
+langchain-openai==0.0.2
+chromadb==0.4.22
+openai==1.6.1
+tiktoken==0.5.2
+
+# UI
+streamlit==1.29.0
+plotly==5.18.0
+
+# Utilities
+python-dotenv==1.0.0
+watchdog==3.0.0  

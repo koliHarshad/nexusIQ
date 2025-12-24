@@ -1,0 +1,14 @@
+# Ignore local virtual environments
+venv/
+env/
+.env
+
+# Ignore git history
+.git/
+.gitignore
+
+# Ignore local database files (we want fresh starts usually, or map them via volumes)
+database/
+__pycache__/
+*.csv
+*.json

@@ -6,24 +6,24 @@ services:
   generator:
     build: .
     container_name: nexus_generator
-    command: python generate_data.py
+    command: python src/backend/generate_data.py
     volumes:
-      - ./raw_data:/app/raw_data  # Syncs local folder with container folder
+      - ./src/database/raw_data:/app/src/raw_data
     environment:
       - PYTHONUNBUFFERED=1
 
   # Service 2: The Dashboard & Brain
   # Reads the data and runs the AI
-  dashboard:
-    build: .
-    container_name: nexus_dashboard
-    command: streamlit run app.py --server.port=8501 --server.address=0.0.0.0
-    volumes:
-      - ./raw_data:/app/raw_data  # Reads from the same synced folder
-      - ./database:/app/database  # Persists the DBs
-    ports:
-      - "8501:8501"
-    depends_on:
-      - generator
-    environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}  # Passes your key safely
+  # dashboard:
+  #   build: .
+  #   container_name: nexus_dashboard
+  #   command: streamlit run app.py --server.port=8501 --server.address=0.0.0.0
+  #   volumes:
+  #     - ./raw_data:/app/raw_data  # Reads from the same synced folder
+  #     - ./database:/app/database  # Persists the DBs
+  #   ports:
+  #     - "8501:8501"
+  #   depends_on:
+  #     - generator
+  #   environment:
+  #     - OPENAI_API_KEY=${OPENAI_API_KEY}  # Passes your key safely

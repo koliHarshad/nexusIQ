@@ -9,6 +9,7 @@ services:
     command: python src/backend/generate_data.py
     volumes:
       - ./src/database/raw_data:/app/src/raw_data
+      - ./src/backend:/app/src/backend
     environment:
       - PYTHONUNBUFFERED=1
 

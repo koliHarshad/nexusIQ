@@ -3,10 +3,10 @@ version: '3.8'
 services:
   # Service 1: The "Chaos" Generator
   # Wakes up and creates fake data
-  generator:
+  backend:
     build: .
-    container_name: nexus_generator
-    command: python src/backend/generate_data.py
+    container_name: nexus_pipeline
+    command: python src/backend/main.py
     volumes:
       - ./src/database/raw_data:/app/src/raw_data
       - ./src/backend:/app/src/backend

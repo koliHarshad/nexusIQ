@@ -12,3 +12,6 @@ database/
 __pycache__/
 *.csv
 *.json
+
+raw_data/
+ref.py 

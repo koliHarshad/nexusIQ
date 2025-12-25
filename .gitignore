@@ -1,1 +1,5 @@
 .venv
+database/
+__pycache__/
+
+raw_data

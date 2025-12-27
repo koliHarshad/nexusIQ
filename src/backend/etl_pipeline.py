@@ -79,7 +79,7 @@ def extract():
         metadatas = df_social[['timestamp', 'platform', 'sentiment_score']].to_dict(orient='records')
         ids = [str(x) for x in df_social['tweet_id'].tolist()]
         
-        # Clean previous run data (optional, prevents duplicates for this demo)
+        # Clean previous run data, prevents duplicates
         if collection.count() > 0:
             collection.delete(collection.get()['ids'])
 
@@ -88,6 +88,12 @@ def extract():
             metadatas=metadatas,
             ids=ids
         )
+
+        social_metadata = pd.DataFrame(metadatas)
+        con = duckdb.connect("src/database/nexus.duckdb")
+        con.execute("CREATE OR REPLACE TABLE social_media AS SELECT * FROM social_metadata")
+        print(f"   ✅ Loaded {len(social_metadata)} social media metadata into ChromaDB and DuckDB.")
+        con.close()
 
     except Exception as e:
         print(f" Error processing social media data: {e}")

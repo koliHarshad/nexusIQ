@@ -63,7 +63,29 @@ def scan_log_anomalies():
 
 # --- DETECTOR 3: Social Sentiment Data ---
 def scan_social_anomalies():
-    return []  
+    print("   Scanning Social Media...")
+    query = """
+        SELECT date_trunc('hour', timestamp::TIMESTAMP) as time,
+        COUNT(*) as toltal_vol,
+        SUM(CASE WHEN sentiment_score < 0 THEN 1 ELSE 0 END) as negative_count,
+        FROM social_media
+        GROUP BY time
+        HAVING COUNT(*) > 5  
+        ORDER BY time ASC
+    """
+    df_social = get_data_as_dataframe(query)
+    if df_social.empty:
+        return []
+    
+    df_social['neg_ratio'] = df_social['negative_count'] / df_social['toltal_vol']
+    events = []
+    for index, row in df_social[df_social['neg_ratio'] > 0.3].iterrows():  # threshold: >30% negative sentiment
+        events.append({
+            "time": row['time'],
+            "type": "NEGATIVE_SENTIMENT",
+            "details": f"High negative sentiment: {row['neg_ratio']*100:.1f}% of {row['toltal_vol']} posts"
+        })
+    return events
 
 def incident_correlation(sales_events, log_events, social_events):
     """
@@ -133,5 +155,8 @@ def run_investigation():
         for fallout in chain['candidate_social_events']:
             lag = fallout['time'] - chain['anchor']['time']
             print(f"  🗣️ FALLOUT (+{lag}):   [{fallout['time']}] {fallout['details']}")
+    
+    return story_clusters
+
 if __name__ == "__main__":
-    run_investigation()
+    story_clusters = run_investigation()

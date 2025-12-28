@@ -89,10 +89,12 @@ def extract():
             ids=ids
         )
 
-        social_metadata = pd.DataFrame(metadatas)
         con = duckdb.connect("src/database/nexus.duckdb")
-        con.execute("CREATE OR REPLACE TABLE social_media AS SELECT * FROM social_metadata")
-        print(f"   ✅ Loaded {len(social_metadata)} social media metadata into ChromaDB and DuckDB.")
+        con.execute("CREATE OR REPLACE TABLE social_media AS " \
+                         "SELECT tweet_id, timestamp, platform, sentiment_score " \
+                         "FROM df_social")
+        
+        print(f"   ✅ Loaded {len(df_social)} social media metadata into ChromaDB and DuckDB.")
         con.close()
 
     except Exception as e:

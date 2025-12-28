@@ -43,7 +43,11 @@ def scan_sales_anomalies():
 def scan_log_anomalies():
     print("   Scanning Server Logs...")
     query = """
-        SELECT date_trunc('hour', timestamp::TIMESTAMP) as time, COUNT(*) as error_count
+        SELECT date_trunc('hour', timestamp::TIMESTAMP) as time,
+        COUNT(*) as error_count,
+        mode(endpoint) as failed_endpoint,
+        mode(status_code) as common_status
+
         FROM server_logs
         WHERE level = 'ERROR'
         GROUP BY time
@@ -54,10 +58,11 @@ def scan_log_anomalies():
 
     events = []
     for index, row in df_logs.iterrows():
+        detail_text = f"{row['error_count']} errors. Most at {row['failed_endpoint']} with status {row['common_status']}"
         events.append({
             "time": row['time'],
             "type": "ERROR_SPIKE",
-            "details": f"{row['error_count']} Errors detected"
+            "details": detail_text
         })
     return events
 
@@ -111,7 +116,7 @@ def incident_correlation(sales_events, log_events, social_events):
             lookforward_window = sales["time"] + timedelta(hours=24)
 
             for log in log_events:
-                # will consider logs as potential root causes candidates if they occurred within the lookback window
+                # will consider logs as potential root cause candidates if they occurred within the lookback window
                 if lookback_window <= log["time"] <= sales["time"]:
                     incident["candidate_log_events"].append(log)
                     # Update incident start time if log happened earlier
@@ -158,5 +163,5 @@ def run_investigation():
     
     return story_clusters
 
-if __name__ == "__main__":
-    story_clusters = run_investigation()
+# if __name__ == "__main__":
+#     story_clusters = run_investigation()

@@ -148,18 +148,18 @@ def run_investigation():
     story_clusters = incident_correlation(sales_events, log_events, social_events)
     
     # 3. Report
-    print(f"\n🧩  Identified {len(story_clusters)} Unique Incidents:")
-    for i, chain in enumerate(story_clusters):
-        print(f"  ⚓ ANCHOR EVENT:       [{chain['anchor']['time']}] {chain['anchor']['details']}")
+    # print(f"\n🧩  Identified {len(story_clusters)} Unique Incidents:")
+    # for i, chain in enumerate(story_clusters):
+    #     print(f"  ⚓ ANCHOR EVENT:       [{chain['anchor']['time']}] {chain['anchor']['details']}")
 
-        for root in chain['candidate_log_events']:
-            lag = root['time'] - chain['anchor']['time']
-            print(f"  🔥ROOT CAUSE CANDIDATES ({lag}): [{root['time']}] {root['details']}")
+    #     for root in chain['candidate_log_events']:
+    #         lag = root['time'] - chain['anchor']['time']
+    #         print(f"  🔥ROOT CAUSE CANDIDATES ({lag}): [{root['time']}] {root['details']}")
                     
-        # Print Fallout
-        for fallout in chain['candidate_social_events']:
-            lag = fallout['time'] - chain['anchor']['time']
-            print(f"  🗣️ FALLOUT (+{lag}):   [{fallout['time']}] {fallout['details']}")
+    #     # Print Fallout
+    #     for fallout in chain['candidate_social_events']:
+    #         lag = fallout['time'] - chain['anchor']['time']
+    #         print(f"  🗣️ FALLOUT (+{lag}):   [{fallout['time']}] {fallout['details']}")
     
     return story_clusters
 

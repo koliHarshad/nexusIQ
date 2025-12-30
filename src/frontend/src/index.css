@@ -1,0 +1,279 @@
+/* src/index.css - COMPLETE FILE */
+
+:root {
+  --bg-dark: #1e1e2f;
+  --bg-light: #fbf9f9;
+  --card-white: #ffffff;
+  --text-main: #333;
+  --text-muted: #888;
+  --accent-blue: #4361ee;
+  --border-color: #e0e0e0;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: var(--bg-light);
+  overflow: hidden; /* Stop page scroll, we scroll inside elements */
+}
+
+/* --- MAIN LAYOUT --- */
+.app-container {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* --- SIDEBAR --- */
+.sidebar {
+  width: 260px;
+  background-color: var(--bg-dark);
+  color: white;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  transition: width 0.3s ease;
+}
+
+.app-container.collapsed .sidebar {
+  width: 90px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 12px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #a0a0b0;
+  transition: all 0.2s;
+  white-space: nowrap; /* Prevents text wrap during collapse */
+}
+
+.nav-item:hover, .nav-item.active {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.nav-item.collapsed {
+  justify-content: center;
+  padding: 12px 0;
+}
+
+
+/* --- HEADER --- */
+.top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* Pushes items to Left, Center, Right */
+  background-color: var(--card-white); /* Matches background so it blends in */
+  margin-bottom: 10px;
+  padding: 10px 25px;
+}
+
+/* Brand Section */
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+}
+
+.logo-square {
+  width: 32px;
+  height: 32px;
+  background-color: #ffffff; /* Dark box for logo */
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-brand h2 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+/* Navigation Links */
+.header-nav {
+  display: flex;
+  gap: 30px;
+  margin-left: 40px;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.95rem;
+  transition: color 0.2s;
+}
+
+.nav-link:hover {
+  color: var(--accent-blue);
+}
+
+.nav-link.active {
+  color: var(--accent-blue);
+  font-weight: 600;
+}
+
+/* Right Actions */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.icon-btn {
+  cursor: pointer;
+  color: var(--text-main);
+  position: relative; /* For the notification dot */
+  padding: 5px;
+  display: flex;
+  align-items: center;
+}
+
+.icon-btn:hover {
+  color: var(--accent-blue);
+}
+
+.notification-dot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  background-color: #ff4d4f;
+  border-radius: 50%;
+  border: 2px solid var(--bg-light);
+}
+
+
+
+/* --- DASHBOARD AREA --- */
+
+.main-content {
+  flex: 1;
+  padding: 5px;
+  background-color: var(--bg-light);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Lock main scroll */
+}
+
+/* --- THE SPLIT GRID (This fixes your layout) --- */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr; /* Fixed Left Width, Flexible Right Width */
+  gap: 25px;
+  height: 100%; /* Fill remaining height */
+  overflow-y: auto; /* Scroll inside this area if needed */
+  padding-bottom: 20px;
+}
+
+/* Left Column: Summary Card */
+.summary-column {
+  height: 100%;
+}
+
+.summary-card {
+  background: var(--card-white);
+  padding: 25px;
+  border-radius: 16px; /* Smooth corners */
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03); /* Subtle shadow */
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+/* Right Column: Stats & Charts */
+.charts-column {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* KPI ROW (Fixes vertical stacking) */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 Equal Columns */
+  gap: 20px;
+}
+
+.kpi-card {
+  background: var(--card-white);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.icon-bg {
+  width: 45px;
+  height: 45px;
+  border-radius: 10px; /* Rounded square shape */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-bg.red { background: #fff1f0; }
+.icon-bg.blue { background: #e6f7ff; }
+.icon-bg.green { background: #f6ffed; }
+
+/* Chart Container */
+.chart-container {
+  background: var(--card-white);
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+  flex: 1; /* Stretch to fill space */
+  min-height: 350px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Typography Helpers */
+h1 { margin: 0 0 20px 0; font-size: 1.8rem; color: var(--text-main); }
+h3 { margin: 0; font-size: 1.4rem; color: var(--text-main); }
+.kpi-label { margin: 0; font-size: 0.85rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+
+/* Weather/Widget Tag */
+.weather-widget {
+  background: #f0f5ff;
+  border: 1px solid #adc6ff;
+  color: #2f54eb;
+  padding: 8px 12px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  margin-top: 15px;
+  width: fit-content;
+}
+
+/* Button */
+.secondary-btn {
+  width: 100%;
+  padding: 12px;
+  background: white;
+  border: 1px solid #d9d9d9;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #333;
+  font-weight: 500;
+  margin-top: auto; /* Push to bottom */
+}
+.secondary-btn:hover { background: #fafafa; border-color: #4361ee; color: #4361ee; }

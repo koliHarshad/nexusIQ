@@ -173,7 +173,7 @@ html, body, #root {
 /* --- THE SPLIT GRID (This fixes your layout) --- */
 .dashboard-grid {
   display: grid;
-  grid-template-columns: 320px 1fr; /* Fixed Left Width, Flexible Right Width */
+  grid-template-columns: 400px 1fr; /* Fixed Left Width, Flexible Right Width */
   gap: 25px;
   height: 100%; /* Fill remaining height */
   overflow-y: auto; /* Scroll inside this area if needed */
@@ -189,7 +189,7 @@ html, body, #root {
   background: var(--card-white);
   padding: 25px;
   border-radius: 16px; /* Smooth corners */
-  box-shadow: 0 4px 20px rgba(0,0,0,0.03); /* Subtle shadow */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Subtle shadow */
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -200,14 +200,14 @@ html, body, #root {
 .charts-column {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 7px;
 }
 
 /* KPI ROW (Fixes vertical stacking) */
 .kpi-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr); /* 3 Equal Columns */
-  gap: 20px;
+  gap: 7px;
 }
 
 .kpi-card {
@@ -269,11 +269,11 @@ h3 { margin: 0; font-size: 1.4rem; color: var(--text-main); }
   width: 100%;
   padding: 12px;
   background: white;
-  border: 1px solid #d9d9d9;
+  border: 1px solid #1a0eff;
   border-radius: 8px;
   cursor: pointer;
-  color: #333;
+  color: #5073ff;
   font-weight: 500;
   margin-top: auto; /* Push to bottom */
 }
-.secondary-btn:hover { background: #fafafa; border-color: #4361ee; color: #4361ee; }
+.secondary-btn:hover { background: #4070f4; border-color: #4361ee; color: #ffffff; }

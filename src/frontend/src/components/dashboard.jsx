@@ -1,94 +1,100 @@
 import { LineChart,Bar,PieChart, Cell, Legend, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Pie } from 'recharts';
 import { AlertTriangle, Activity, DollarSign, Users, FileText, CheckCircle, BookTemplate } from 'lucide-react';
 import Header from './header.jsx';
-import { useEffect, usestate } from 'react';
+import { useEffect, useState } from 'react';
 
 
 const Dashboard = () => {
 
-  // const [incidentData, setIncidentData] = usestate(null);
-  // const [dashboardMetrics, setDashboardMetrics] = usestate(null);
-  // const [loading, setLoading] = usestate(true);
+  const [incidentData, setIncidentData] = useState(null);
+  const [dashboardMetrics, setDashboardMetrics] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // useEffect(() => {
-  //   // Fetch incident data using fastapi
-  //   fetch('http://localhost:8000/api/latest-report')
-  //     .then(res => res.json())
-  //     .then(data => {
-  //       setIncidentData(data);
-  //       setLoading(false);
-  //     })
-  //     .catch(err => {
-  //       console.error('Error fetching incident data:', err);
-  //       setLoading(false);
-  //     });
+  useEffect(() => {
+    const loadDashboardData = async () => {
+      try {
+        // Fetch incident report data
+        const reportResponse = await fetch('http://localhost:8000/api/latest-report');
+        const reportData = await reportResponse.json();
+        setIncidentData(reportData);
 
-  //   fetch('http://localhost:8000/api/dashboard-metrics')
-  //     .then(res => res.json())
-  //     .then(data => {
-  //       setDashboardMetrics(data);
-  //     })
-  //     .catch(err => {
-  //       console.error('Error fetching dashboard metrics:', err);
-  //     });
+        // Fetch dashboard metrics data
+        // extract timestamp from the clusters column of reportData for metrics fetch
+        let anchorTime = null;
+        if (reportData.clusters && reportData.clusters.length > 0) {
+          const lastCluster = reportData.clusters[reportData.clusters.length - 1];
+          anchorTime = lastCluster.anchor.time;
+        }
 
-  // }, []);
-    
+        if (anchorTime) {
+          const metricsResponse = await fetch(`http://localhost:8000/api/dashboard-metrics?timestamp=${encodeURIComponent(anchorTime)}`);
+          const metricsData = await metricsResponse.json();
+          setDashboardMetrics(metricsData);
+        }
+        
+      } catch (error) {
+        console.error('Error loading dashboard data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
+    loadDashboardData();
+  }, []);
 
-  // if (loading) return <div style={{padding: '50px', textAlign: 'center', color: '#666'}}>Initializing NexusIQ Analysis...</div>;
-  // if (!incidentData || incidentData.error) return <div style={{padding: '50px', textAlign: 'center'}}>No Analysis Found. Run the reporter script first.</div>;
-
-  const sampleData = [
-           {
-            "id": 14039,
-            "timestamp": 2023-10-11,
-            "verdictTitle": "Sales Trend Analysis",
-            "verdictStatus": "Critical",
-            "verdictText": "The incident began on 2023-10-11 at 19:00:00. Logs explicitly show a high volume of 500 errors originating from the /api/v1/checkout endpoint.",
-            "timelineText": "No timeline available.",
-            "recommendedActions": "Couldn't provide recommended actions.",
-            "clusters": "No clusters available."
-          }
-  ]
-  const dashboardSampleMetrics = {
-    "sales_trend": [
-        { "time": "2023-10-12 10:00:00", "revenue": 15200.50 },
-        { "time": "2023-10-12 11:00:00", "revenue": 16100.00 },
-        { "time": "2023-10-12 12:00:00", "revenue": 15800.75 },
-        { "time": "2023-10-12 13:00:00", "revenue": 14200.20 },
-        { "time": "2023-10-12 14:00:00", "revenue": 8500.00 },  // The Drop starts
-        { "time": "2023-10-12 15:00:00", "revenue": 4200.00 },  // Deep impact
-        { "time": "2023-10-12 16:00:00", "revenue": 3800.50 },  // Deep impact
-        { "time": "2023-10-12 17:00:00", "revenue": 9100.00 },  // Recovery starts
-        { "time": "2023-10-12 18:00:00", "revenue": 14500.00 }, // Recovered
-        { "time": "2023-10-12 19:00:00", "revenue": 16200.00 }
-    ],
-    "error_trend": [
-        { "time": "2023-10-12 10:00:00", "count": 12 },
-        { "time": "2023-10-12 11:00:00", "count": 15 },
-        { "time": "2023-10-12 12:00:00", "count": 10 },
-        { "time": "2023-10-12 13:00:00", "count": 45 },  // Warning signs
-        { "time": "2023-10-12 14:00:00", "count": 312 }, // The Spike
-        { "time": "2023-10-12 15:00:00", "count": 450 }, // Peak errors
-        { "time": "2023-10-12 16:00:00", "count": 410 },
-        { "time": "2023-10-12 17:00:00", "count": 120 }, // Subsiding
-        { "time": "2023-10-12 18:00:00", "count": 25 },
-        { "time": "2023-10-12 19:00:00", "count": 14 }
-    ],
-    "sentiment": {
-        "total": 1250,
-        "negative": 850,
-        "positive": 400
-    }
-  };
+  if (loading) return <div style={{padding: '50px', textAlign: 'center', color: '#666'}}>Initializing NexusIQ Analysis...</div>;
+  if (!incidentData || incidentData.error) return <div style={{padding: '50px', textAlign: 'center'}}>No Analysis Found. Run the reporter script first.</div>;
+  if (!dashboardMetrics) return <div style={{padding: '50px', textAlign: 'center'}}> dashboard data: {dashboardMetrics.sales_trend?.length || 0} </div>;
+  // const sampleData = 
+  //          {
+  //           "id": 14039,
+  //           "timestamp": 2023-10-11,
+  //           "verdictTitle": "Sales Trend Analysis",
+  //           "verdictStatus": "Critical",
+  //           "verdictText": "The incident began on 2023-10-11 at 19:00:00. Logs explicitly show a high volume of 500 errors originating from the /api/v1/checkout endpoint.",
+  //           "timelineText": "No timeline available.",
+  //           "recommendedActions": "Couldn't provide recommended actions.",
+  //           "clusters": "No clusters available."
+  //         }
+  
+  // const dashboardSampleMetrics = {
+  //   "sales_trend": [
+  //       { "time": "2023-10-12 10:00:00", "revenue": 15200.50 },
+  //       { "time": "2023-10-12 11:00:00", "revenue": 16100.00 },
+  //       { "time": "2023-10-12 12:00:00", "revenue": 15800.75 },
+  //       { "time": "2023-10-12 13:00:00", "revenue": 14200.20 },
+  //       { "time": "2023-10-12 14:00:00", "revenue": 8500.00 },  // The Drop starts
+  //       { "time": "2023-10-12 15:00:00", "revenue": 4200.00 },  // Deep impact
+  //       { "time": "2023-10-12 16:00:00", "revenue": 3800.50 },  // Deep impact
+  //       { "time": "2023-10-12 17:00:00", "revenue": 9100.00 },  // Recovery starts
+  //       { "time": "2023-10-12 18:00:00", "revenue": 14500.00 }, // Recovered
+  //       { "time": "2023-10-12 19:00:00", "revenue": 16200.00 }
+  //   ],
+  //   "error_trend": [
+  //       { "time": "2023-10-12 10:00:00", "count": 12 },
+  //       { "time": "2023-10-12 11:00:00", "count": 15 },
+  //       { "time": "2023-10-12 12:00:00", "count": 10 },
+  //       { "time": "2023-10-12 13:00:00", "count": 45 },  // Warning signs
+  //       { "time": "2023-10-12 14:00:00", "count": 312 }, // The Spike
+  //       { "time": "2023-10-12 15:00:00", "count": 450 }, // Peak errors
+  //       { "time": "2023-10-12 16:00:00", "count": 410 },
+  //       { "time": "2023-10-12 17:00:00", "count": 120 }, // Subsiding
+  //       { "time": "2023-10-12 18:00:00", "count": 25 },
+  //       { "time": "2023-10-12 19:00:00", "count": 14 }
+  //   ],
+  //   "sentiment": {
+  //       "total": 1250,
+  //       "negative": 850,
+  //       "positive": 400
+  //   }
+  // };
 
 
   return (
     <div className="main-content">
       <Header />
       <h1 style={{padding: "15px", marginLeft: "17px"}}>Sales Activity Report</h1>
-      <h3 style={{marginLeft: '50px', marginBottom: '20px'  }}> Incident number: {sampleData[0].id}</h3>
+      <h3 style={{marginLeft: '50px', marginBottom: '20px'}}> Incident number: {incidentData.id}</h3>
 
       <div className="dashboard-grid">
         
@@ -100,19 +106,18 @@ const Dashboard = () => {
          
             <h4 style={{ color: '#555', marginTop: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}> 
               <AlertTriangle size={20} color="#ff4d4f" />
-              Verdict: {sampleData[0].verdictStatus}</h4>
+              Verdict: {incidentData.verdictStatus}</h4>
             <p style={{ lineHeight: '1.6', color: '#666', fontSize: '0.9rem' }}>
-              {sampleData[0].verdictText} </p>
-            
+              {incidentData.verdictText} </p>
+
             <h4 style={{ color: '#555', marginTop: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}> 
               Timeline Analysis</h4>
             <p style={{ lineHeight: '1.6', color: '#666', fontSize: '0.9rem' }}>
-              {sampleData[0].verdictText} </p>
-
+              {incidentData.timelineText} </p>
             <h4 style={{ color: '#555', marginTop: '15px', display: 'flex', alignItems: 'center', gap: '8px' }}> 
               Recommended Actions</h4>
             <p style={{ lineHeight: '1.6', color: '#666', fontSize: '0.9rem' }}>
-              {sampleData[0].verdictText} </p>
+              {incidentData.recommendedActions} </p>
 
             <div style={{ marginTop: 'auto', paddingTop: '20px' }}>
                 <button className="secondary-btn">View Raw Logs</button>
@@ -126,7 +131,7 @@ const Dashboard = () => {
           <div className="kpi-grid">
             <div className="kpi-card">
               <div className="icon-bg red"><Activity size={20} color="#ff4d4f" /></div>
-              <div><p className="kpi-label">Events</p><h3>{sampleData[0].clusters.length}</h3></div>
+              <div><p className="kpi-label">Events</p><h3>{incidentData.clusters.length}</h3></div>
             </div>
 
             <div className="kpi-card">
@@ -146,7 +151,7 @@ const Dashboard = () => {
             <h3  style={{marginBottom:"25px"}}> Sales Activity </h3>
             <div style={{ height: '300px' }}>
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={dashboardSampleMetrics.sales_trend}>
+                <LineChart data={dashboardMetrics.sales_trend}>
                   <CartesianGrid strokeDasharray="3 3" vertical={false} />
                   <XAxis 
                     dataKey="time" 
@@ -168,14 +173,15 @@ const Dashboard = () => {
                 </LineChart>
               </ResponsiveContainer>
             </div>
+              
+            <h3 style={{marginTop:"35px", marginBottom: "14px"}}> Evidence Locker</h3>
 
-            <h3 style={{marginTop:"25px", marginBottom: "0px"}}> Evidence Locker</h3>
             <div style={{display: "flex", gap: "7px", width:"100%"}}>
               <div className='kpi-card' style={{ boxShadow:"0 4px 8px rgba(0,0,0,0.1)",flex: 2, display: "flex", flexDirection: "column" , alignItems:"start", height: "300px", width: "170%"}}>
                 <h4>Error Count</h4>
 
                 <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={dashboardSampleMetrics.error_trend}>
+                  <BarChart data={dashboardMetrics.error_trend}>
                     {/* X-Axis: Shows Time (10:00) */}
                     <XAxis 
                       dataKey="time" 
@@ -210,8 +216,8 @@ const Dashboard = () => {
                   <PieChart>
                     <Pie 
                       data={[
-                        { name: 'Negative', value: dashboardSampleMetrics.sentiment.negative},
-                        { name: 'Positive', value: dashboardSampleMetrics.sentiment.positive}
+                        { name: 'Negative', value: dashboardMetrics.sentiment?.negative || 0},
+                        { name: 'Positive', value: dashboardMetrics.sentiment?.positive || 0}
                       ]}
                       cx="50%"
                       cy="50%"

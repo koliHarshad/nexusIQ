@@ -98,7 +98,7 @@ def create_narrative(story_clusters):
     4. STYLE: Be direct. No "It seems that". State the facts.
     
     OUTPUT FORMAT:
-    - VERDICT: (One sentence summary including the specific endpoint and total impact)
+    - VERDICT: (One sentence summary including the specific endpoint and total impact. also mention the date and time from when to when the incident is happening)
     - TIMELINE ANALYSIS: (Explain how the incident started and progressed)
     - RECOMMENDED ACTION: (What specific service/endpoint needs fixing?)
     """

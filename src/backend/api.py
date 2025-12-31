@@ -1,9 +1,14 @@
 import duckdb
 import json
-from fastapi import FastAPI
+import os
+from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
+from datetime import datetime, timedelta
 
 app = FastAPI()
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "..", "database", "nexus.duckdb")
 
 # Allow your React App to talk to this API
 app.add_middleware(
@@ -19,7 +24,7 @@ def get_latest_report():
         # 1. fetch the data from db
 
         # Connect in Read-Only mode to avoid locking
-        con = duckdb.connect("src/database/nexus.duckdb", read_only=True)
+        con = duckdb.connect(DB_PATH, read_only=True)
 
         query = """
             SELECT id, timestamp, ai_report, story_clusters
@@ -54,33 +59,53 @@ def get_latest_report():
         return {"error fetching report from database": str(e)}
     
 @app.get("/api/dashboard-metrics")
-def get_dashboard_metrics():
+def get_dashboard_metrics(timestamp: str = Query(None)):
     try:
-        con = duckdb.connect("src/database/nexus.duckdb", read_only=True)
+        print(f"Fetching dashboard metrics for anchor time: {timestamp}")
+        con = duckdb.connect(DB_PATH, read_only=True)
 
-        sales_query = """
-            SELECT date_trunc('hour', timestamp)AS time,
+        if timestamp:
+            anchor_dt = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
+        else: 
+            print("⚠️ No anchor time provided, defaulting to latest incident.")
+            res = con.execute("SELECT story_clusters FROM incident_reports ORDER BY timestamp DESC LIMIT 1").fetchone()
+            if not res: return {"error": "No data"}
+            clusters = json.loads(res[0])
+            anchor_dt = datetime.strptime(clusters[0]['anchor']['time'], "%Y-%m-%d %H:%M:%S")
+
+        # 7 days window
+        start_dt = anchor_dt - timedelta(days=7)
+        if anchor_dt + timedelta(days=1):
+            end_dt = anchor_dt + timedelta(days=1)
+        else:
+            end_dt = anchor_dt
+        
+        sales_query = f"""
+            SELECT date_trunc('hour', timestamp::TIMESTAMP)AS time,
             SUM(amount) AS total_sales
             FROM sales_data
+            WHERE timestamp BETWEEN '{start_dt}' AND '{end_dt}'
             GROUP BY time
-            ORDER BY time DESC"""
+            ORDER BY time ASC"""
         sales_data = con.execute(sales_query).fetchall()
 
-        log_query = """ 
-            SELECT date_trunc('hour', timestamp) AS time,
+        log_query = f""" 
+            SELECT date_trunc('hour', timestamp::TIMESTAMP) AS time,
             COUNT(*) AS error_count
             FROM server_logs
-            WHERE level = 'ERROR'
+            WHERE level = 'ERROR' AND timestamp BETWEEN '{start_dt}' AND '{end_dt}'
             GROUP BY time
-            ORDER BY time DESC"""
+            ORDER BY time ASC"""
         logs_data = con.execute(log_query).fetchall()
 
-        social_query = """
+        social_query = f"""
             SELECT 
                 COUNT(*) as total,
                 SUM(CASE WHEN sentiment_score < 0 THEN 1 ELSE 0 END) as negative,
                 SUM(CASE WHEN sentiment_score >= 0 THEN 1 ELSE 0 END) as positive
-            FROM social_media"""
+            FROM social_media
+            WHERE timestamp BETWEEN '{start_dt}' AND '{end_dt}'
+            """
         social_stats = con.execute(social_query).fetchone()
         
         con.close()        

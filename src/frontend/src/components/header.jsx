@@ -10,7 +10,7 @@ const Header = () => {
                 </div>
                 <h2>NexusIQ</h2>
                 
-                <nav className="header-nav" marginLeft="20px">
+                <nav className="header-nav">
                     <a href="#" className="nav-link active">Home</a>
                     <a href="#" className="nav-link">Audit Logs</a>
                 </nav>

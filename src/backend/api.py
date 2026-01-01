@@ -7,9 +7,6 @@ from datetime import datetime, timedelta
 
 app = FastAPI()
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "..", "database", "nexus.duckdb")
-
 # Allow your React App to talk to this API
 app.add_middleware(
     CORSMiddleware, 
@@ -24,7 +21,7 @@ def get_latest_report():
         # 1. fetch the data from db
 
         # Connect in Read-Only mode to avoid locking
-        con = duckdb.connect(DB_PATH, read_only=True)
+        con = duckdb.connect("src/database/nexus.duckdb", read_only=True)
 
         query = """
             SELECT id, timestamp, ai_report, story_clusters
@@ -62,7 +59,7 @@ def get_latest_report():
 def get_dashboard_metrics(timestamp: str = Query(None)):
     try:
         print(f"Fetching dashboard metrics for anchor time: {timestamp}")
-        con = duckdb.connect(DB_PATH, read_only=True)
+        con = duckdb.connect("src/database/nexus.duckdb", read_only=True)
 
         if timestamp:
             anchor_dt = datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S")
@@ -124,3 +121,28 @@ def get_dashboard_metrics(timestamp: str = Query(None)):
     except Exception as e:
         return {"error fetching dashboard metrics": str(e)}    
 
+@app.get("/api/incident-history")
+def get_incident_history():
+    try:
+        con = duckdb.connect("src/database/nexus.duckdb", read_only=True)
+        query = """ 
+            SELECT id, timestamp, ai_report, story_clusters
+            FROM incident_reports
+            ORDER BY timestamp DESC"""
+        
+        data = con.execute(query).fetchall()
+        con.close()
+
+        history = []
+        for row in data:
+            history.append({
+                "id": row[0],
+                "timestamp": str(row[1]),
+                "summary_report":json.loads(row[2]),
+                "raw_logs": json.loads(row[3])
+            })
+
+        return history
+    
+    except Exception as e:
+        return {"error fetching incident history": str(e)}

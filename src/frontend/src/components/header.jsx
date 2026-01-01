@@ -11,8 +11,8 @@ const Header = () => {
                 <h2>NexusIQ</h2>
                 
                 <nav className="header-nav">
-                    <a href="#" className="nav-link active">Home</a>
-                    <a href="#" className="nav-link">Audit Logs</a>
+                    <a href="/" className="nav-link active">Home</a>
+                    <a href="/audit-logs" className="nav-link">Audit Logs</a>
                 </nav>
             </div>
 

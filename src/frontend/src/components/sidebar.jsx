@@ -1,6 +1,8 @@
 import { LayoutDashboard, FileText, Settings, Menu } from 'lucide-react';
+import {Link, useLocation} from 'react-router-dom';
 
 const Sidebar = ({ isCollapsed, toggleSidebar }) => {
+    const location = useLocation();
     return (
         <div className="sidebar">
             <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginBottom: '40px' }}>
@@ -16,15 +18,15 @@ const Sidebar = ({ isCollapsed, toggleSidebar }) => {
 
 
             <nav style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                <div className="nav-item active">
+                <Link to="/" className={`nav-item ${location.pathname === '/' ? 'active' : ''}`}>                    
                     <LayoutDashboard size={20} />
                     {!isCollapsed &&<span>Home</span>}
-                </div>
+                </Link>
 
-                <div className="nav-item">
+                <Link to="/audit-logs" className={`nav-item ${location.pathname === '/audit-logs' ? 'active' : ''}`}>
                     <FileText size={20} />
                     {!isCollapsed && <span>Audit Logs</span>}
-                </div>
+                </Link>
 
                 <div className="nav-item">
                     <Settings size={20} />

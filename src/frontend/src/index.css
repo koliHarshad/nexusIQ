@@ -56,8 +56,13 @@ html, body, #root {
   white-space: nowrap; /* Prevents text wrap during collapse */
 }
 
-.nav-item:hover, .nav-item.active {
+.nav-item:hover {
   background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.nav-item.active{
+  background-color: rgb(70, 101, 255);
   color: white;
 }
 

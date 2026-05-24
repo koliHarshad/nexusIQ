@@ -1,3 +1,6 @@
+# API endpoints for NexusIQ backend. 
+# This module defines the RESTful API using FastAPI to serve the latest incident report, dashboard metrics, and incident history to the React frontend.
+
 import duckdb
 import json
 import os

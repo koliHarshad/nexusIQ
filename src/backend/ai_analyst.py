@@ -1,3 +1,5 @@
+# The AI integration module responsible for parsing data and generating intelligent insights.
+
 import duckdb
 import pandas as pd
 import numpy as np

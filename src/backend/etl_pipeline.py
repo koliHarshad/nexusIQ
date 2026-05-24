@@ -1,3 +1,5 @@
+# Handles the Extraction, Transformation, and Loading of raw forensic reports into the database.
+
 import pandas as pd
 import duckdb
 import json

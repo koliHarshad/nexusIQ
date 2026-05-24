@@ -1,3 +1,5 @@
+# Main entry point for NexusIQ backend
+
 import json
 import uuid
 import duckdb

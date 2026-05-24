@@ -1,3 +1,5 @@
+# feteches the relevant social media context for a given incident and then compiles the full narrative report by calling the LLM with all the evidence (technical + social).
+
 import duckdb
 import chromadb
 from langchain_google_genai import ChatGoogleGenerativeAI

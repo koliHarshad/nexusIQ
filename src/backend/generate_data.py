@@ -1,3 +1,5 @@
+# Utility script for generating mock forensic data (sales_data.json, server_logs.txt, social_media.csv) for testing and development.
+
 import pandas as pd
 import numpy as np
 import random

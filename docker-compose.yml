@@ -1,19 +1,33 @@
 version: '3.8'
 
 services:
-  # Service 1: The "Chaos" Generator
-  # Wakes up and creates fake data
-  backend:
+# Service 1: The AI Pipeline (Runs first to generate data & reports)
+  pipeline:
     build: .
     container_name: nexus_pipeline
     command: python src/backend/main.py
     volumes:
       - ./src/database/raw_data:/app/src/raw_data
       - ./src/backend:/app/src/backend
-    environment:
-      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
 
-  # Service 2: The Dashboard & Brain
+  # Service 2: The API Server (Talks to React)
+  fastapi_server:
+    build: .
+    container_name: nexus_api
+    command: python -m uvicorn src.backend.api:app --host 0.0.0.0 --port 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src/database:/app/src/database
+    env_file:
+      - .env
+    depends_on:
+      pipeline:
+        condition: service_completed_successfully
+
+  # Service 3: The Dashboard & Brain
   # Reads the data and runs the AI
   # dashboard:
   #   build: .

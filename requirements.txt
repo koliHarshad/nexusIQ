@@ -8,6 +8,7 @@ Faker
 langchain
 langchain-community
 langchain-openai
+langchain_google_genai
 chromadb
 openai
 tiktoken
